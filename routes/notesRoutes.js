@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Note = require('../models/Note')
+const authMiddleware = require('./../middleware/authMiddleware')
 
 // Sample Notes Data (Temporary, will be replaced with MongoDB later)
 // let notes = [
@@ -9,7 +10,7 @@ const Note = require('../models/Note')
 // ];
 
 //Get all notes
-router.get('/notes',async(req,res)=>{
+router.get('/notes', async(req,res)=>{
     try{
         const notes = await Note.find(); //.find() is a Mongoose method that retrieves all documents (records) from the database.
         res.json(notes); //responds with all notes
@@ -36,7 +37,7 @@ router.get('/notes/:id', async (req,res)=>{
 });
 
 //Create a new note
-router.post('/notes',async (req,res)=>{
+router.post('/notes',authMiddleware,async (req,res)=>{
     const {title,content} = req.body;
     // const newNote = {id:notes.length +1, title, content};
     // notes.push(newNote);
@@ -47,7 +48,7 @@ router.post('/notes',async (req,res)=>{
         res.status(201).json(newNote);
     }
     catch(err){
-        res.status(500).json({ message: 'Server error', error });
+        res.status(500).json({ message: 'Server error', err });
     }
     
 });
@@ -70,7 +71,7 @@ router.put('/notes/:id',async (req,res)=>{
 });
 
 //Delete a note
-router.delete('/notes/:id',async (req,res)=>{
+router.delete('/notes/:id',authMiddleware,async (req,res)=>{
     try{
         const deletedNote = await Note.findByIdAndDelete(req.params.id);if (!deletedNote) return res.status(404).json({ message: 'Note not found' });
         res.json({ message: 'Note deleted successfully' });
