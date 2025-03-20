@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose'); // Import Mongoose
 const notesRoutes = require('./routes/notesRoutes');
-
+const authRoutes = require('./routes/authRoutes');
 const app = express();
 
 app.use(cors()); // Allow requests from frontend
@@ -18,7 +18,7 @@ mongoose.connect(process.env.MONGO_URI,{
 .catch(err=> console.log('Connection error:', err))
 // Use notesRoutes for handling "/api/notes" routes
 app.use('/api', notesRoutes);
-
+app.use('/api/auth', authRoutes);
 app.get('/', (req, res) => {
     res.send('Hello, Express! Notes API is running.');
 });
